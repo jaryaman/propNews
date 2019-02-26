@@ -2,3 +2,4 @@ rat_news_creds*
 **/.ipynb_checkpoints
 **/__pycache__
 news.db
+error_log.txt

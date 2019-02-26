@@ -36,6 +36,6 @@ def get_results(apiKey, page_limit_per_request=10, results_per_page=100):
                 else:
                     article_dict[url] = {'content':desc,
                                         'publishedAt':publishedAt}
-            except KeyError:
-                break
+        except KeyError:
+            break
     return article_dict
