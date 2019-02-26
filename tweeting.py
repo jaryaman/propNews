@@ -33,7 +33,7 @@ def save_news(db_filename, article_dict):
     conn = sq.connect(db_filename)
     c = conn.cursor()
     for url, url_dict in article_dict.items():
-        insert_string = '''INSERT INTO news(
+        insert_string = '''INSERT or IGNORE INTO news(
                         url,
                         score,
                         publishedAt)
@@ -128,7 +128,7 @@ load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False)
 
         article_choice_index = np.random.choice(len(qalys_scores), p=qalys_scores/qalys_scores.sum())
         url = list(article_dict.keys())[article_choice_index]
-        topics = v[article_choice_index][2]
+        topics = v[article_choice_index]['topics']
         topics_string = ''
         for i, topic in enumerate(topics):
             if i == len(topics) - 1:
