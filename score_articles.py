@@ -27,12 +27,7 @@ def score_article(article, qaly_scorer):
 
 def score_all(article_dict, qaly_scorer):
     for article_url in article_dict:
-        article_content, publishedAt = article_dict[article_url]
-        article_score, article_topics = score_article(article_content, qaly_scorer)
-
-        article_dict[article_url] = {'article_score':article_score,
-                                     'article_content':article_content,
-                                     'article_topics':article_topics,
-                                     'publishedAt':publishedAt}
-
+        article_score, article_topics = score_article(article_dict[article_url]['content'], qaly_scorer)
+        article_dict[article_url]['score'] = article_score
+        article_dict[article_url]['topics'] = article_topics
     return article_dict

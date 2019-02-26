@@ -20,6 +20,9 @@ def create_db(db_filename, create_str):
         conn.commit()
         conn.close()
 
+def add_quotes(s):
+    return '"'+s+'"'
+
 def save_news(db_filename, article_dict):
     ''' Insert article_dict into news
 
@@ -29,7 +32,7 @@ def save_news(db_filename, article_dict):
     '''
     conn = sq.connect(db_filename)
     c = conn.cursor()
-    for key, value in article_dict.iteritems():
+    for url, url_dict in article_dict.items():
         insert_string = '''INSERT INTO news(
                         url,
                         score,
@@ -37,11 +40,10 @@ def save_news(db_filename, article_dict):
                         VALUES(
                         {0},
                         {1},
-                        {2},
+                        {2}
                         )
-                        '''.format(key,value[0],value[-1])
-
-    c.execute()
+                        '''.format(add_quotes(url),url_dict['score'],add_quotes(url_dict['published_at']))
+        c.execute(insert_string)
     conn.commit()
     conn.close()
 
@@ -97,7 +99,6 @@ load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False)
             article_dict = get_articles.get_results(apiKey,page_limit_per_request = 1,results_per_page=10)
         else:
             article_dict = get_articles.get_results(apiKey)
-        #save_news()
     if len(article_dict) < 5: # assume something went wrong with the API
         output=tweepyapi.update_status("Something went wrong with the API at " + str(datetime.datetime.now()))
         error_log_pointer = open(error_log_filename,'a')
@@ -109,9 +110,11 @@ load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False)
         ## Calculate aggregate QALY scores for each article
         qaly_scorer = score_articles.get_qaly_data(qaly_path)
         article_dict = score_articles.score_all(article_dict, qaly_scorer)
+        save_news(db_filename, article_dict)
+
         v = article_dict.values()
         v = list(v)
-        qalys_scores = np.array([a['article_score'] for a in v])
+        qalys_scores = np.array([a['score'] for a in v])
         qaly_total = qalys_scores.sum()
         if qaly_total < qaly_thresh: # there aren't enough newsworthy stories
             output=tweepyapi.update_status("I didn't find anything interesting at " + str(datetime.datetime.now()))

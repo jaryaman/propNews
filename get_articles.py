@@ -32,10 +32,10 @@ def get_results(apiKey, page_limit_per_request=10, results_per_page=100):
                 publishedAt = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content':desc + ' ' + content,
-                                        'publishedAt':publishedAt}
+                                        'published_at':publishedAt}
                 else:
                     article_dict[url] = {'content':desc,
-                                        'publishedAt':publishedAt}
+                                        'published_at':publishedAt}
         except KeyError:
             break
     return article_dict

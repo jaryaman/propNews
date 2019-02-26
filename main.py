@@ -3,7 +3,6 @@ import tweeting
 from IPython import get_ipython
 import sqlite3 as sq
 from pdb import set_trace
-from datetime import datetime
 
 '''
 To run this script:
@@ -59,8 +58,8 @@ error_log_pointer.close()
 # Create API database
 db_filename = 'news.db'
 create_str = '''CREATE TABLE IF NOT EXISTS news (
-                url TEXT,
-                score REAL,
+                url TEXT PRIMARY KEY,
+                score REAL NOT NULL,
                 publishedAt DATETIME
                 )
             ''' # index INTEGER PRIMARY KEY
