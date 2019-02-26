@@ -1,8 +1,8 @@
 import requests
 import pickle
-from get_full_content import get_bbc_content
+from get_full_content import get_bbc_content # get_full_content has bbc, guardian and reuters specific functions that are compatible with their respective sources as taken from newsapi
 
-def get_new_results(page_limit_per_request=10, results_per_page=100, last_published):
+def get_new_results(page_limit_per_request=10, results_per_page=100, last_published): #last published needs an input from the dataframe of the most recent article we have access to
     """Queries NewsAPI for articles up to page_limit_per_request (max 10) and
     returns a dictionary mapping URL: content, as well as the time the most recent article published was released"""
 
@@ -14,7 +14,7 @@ def get_new_results(page_limit_per_request=10, results_per_page=100, last_publis
                 print('Accessing page {}'.format(i))
             p = i + 1
             page_str = 'page={}&'.format(p)
-            query = ('https://newsapi.org/v2/everything?sources=bbc-news&'
+            query = ('https://newsapi.org/v2/everything?sources=bbc-news&' # can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
                      +page_str+
                      'from={}&'.format(last_published)
                      'sort=date_published&'
@@ -31,9 +31,7 @@ def get_new_results(page_limit_per_request=10, results_per_page=100, last_publis
                 article = js['articles'][k]
                 desc = article['description']
                 url = article['url']
-                content = get_bbc_content(url)                
-                if i == 0 & k == 0:
-                    last_call = article['publishedAt']
+                content = get_bbc_content(url)   # doesnt yet include storing publishedAt
                 if content is not None:
                     dict_url_desc[url] = desc + ' ' + content
                 else:
@@ -46,4 +44,4 @@ def get_new_results(page_limit_per_request=10, results_per_page=100, last_publis
         if p >= max_page:
             break
 
-    return dict_url_desc, last_call
+    return dict_url_desc
