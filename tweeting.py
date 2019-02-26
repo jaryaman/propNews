@@ -54,13 +54,14 @@ class RepeatEvery(threading.Thread):
     def stop(self):
         self.runable = False
 
-def tweet_news(tweepyapi,qaly_path,error_log_filename, error_log_pointer, load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
+def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer, load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     """
     Tweet a single news story drawn randomly, weighted by a QALY
 
     Parameters
     --------------
     tweepyapi : tweepy.api.API object, contains Twitter API credentials and allows tweeting
+    apiKey : A string, the API key of the news API
     qaly_path : A string, directory of the QALY table
     error_log_filename : A string, file name for error log
     error_log_pointer : An IO pointer, the pointer to the error log
@@ -74,10 +75,10 @@ def tweet_news(tweepyapi,qaly_path,error_log_filename, error_log_pointer, load_a
         article_dict = pickle.load(pickled_file)
     else:
         if dbg_mode:
-            article_dict = get_articles.get_results(page_limit_per_request = 1)
+            article_dict = get_articles.get_results(apiKey,page_limit_per_request = 1,results_per_page=10)
         else:
-            article_dict = get_articles.get_results()
-        save_news()
+            article_dict = get_articles.get_results(apiKey)
+        #save_news()
     if len(article_dict) < 5: # assume something went wrong with the API
         output=tweepyapi.update_status("Something went wrong with the API at " + str(datetime.datetime.now()))
         error_log_pointer = open(error_log_filename,'a')

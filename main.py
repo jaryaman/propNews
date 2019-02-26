@@ -2,6 +2,7 @@ import tweepy
 import tweeting
 from IPython import get_ipython
 import sqlite3 as sq
+from pdb import set_trace
 
 '''
 To run this script:
@@ -19,10 +20,11 @@ ipython.magic("autoreload 2")
 
 
 credentials_dir = '../'
-credentials_filename = 'twitter_API_keys.txt' # this must be placed in the directory above the repo
+twitter_credentials_filename = 'twitter_API_keys.txt' # this must be placed in the directory above the repo
+news_api_filename = 'newsapi_key.txt'
 
 # Parse twitter credentials from the text file, see https://developer.twitter.com/en/apps
-fp = open(credentials_dir+credentials_filename,'r')
+fp = open(credentials_dir+twitter_credentials_filename,'r')
 creds = fp.read().splitlines()
 for c in creds:
     if 'API_key=' in c:
@@ -33,6 +35,12 @@ for c in creds:
         access_token=c.split('=')[1]
     if 'Access_token_secret=' in c:
         access_token_secret=c.split('=')[1]
+fp.close()
+
+# Get news API key
+fp = open(credentials_dir+news_api_filename,'r')
+apiKey = fp.read().split()[0]
+
 
 # Set twitter credentials
 auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
@@ -60,7 +68,7 @@ tweeting.create_db(db_filename, create_str)
 periodicity_s = 3600
 max_time = 7*24*3600
 
-thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, qaly_path, error_log_filename, error_log_pointer, dbg_mode=True)
+thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, error_log_filename, error_log_pointer, dbg_mode=True)
 
 print('Starting')
 thread.start()

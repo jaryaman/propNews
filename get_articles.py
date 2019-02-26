@@ -1,7 +1,7 @@
 import requests
 import pickle
-
-def get_results(page_limit_per_request=10, results_per_page=100):
+from pdb import set_trace
+def get_results(apiKey, page_limit_per_request=10, results_per_page=100):
     """Queries NewsAPI for articles up to page_limit_per_request (max 50) and
     returns a dictionary mapping URL: content."""
 
@@ -13,11 +13,13 @@ def get_results(page_limit_per_request=10, results_per_page=100):
                 print('Accessing page {}'.format(i))
             p = i + 1
             page_str = 'page={}&'.format(p)
+            pagesize_str = 'pagesize={}&'.format(results_per_page)
+            apikey_str = 'apiKey={}'.format(apiKey)
             query = ('https://newsapi.org/v2/everything?sources=bbc-news&'
                      +page_str+
                      'sort=date_published&'
-                     'pagesize={}&'.format(results_per_page)
-                     'apiKey={}'.format(apiKey))
+                     +pagesize_str
+                     +apikey_str) # must go at the end
             response = requests.get(query)
             js = response.json()
 
