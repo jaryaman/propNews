@@ -3,6 +3,7 @@ import tweeting
 from IPython import get_ipython
 import sqlite3 as sq
 from pdb import set_trace
+from datetime import datetime
 
 '''
 To run this script:
@@ -58,17 +59,17 @@ error_log_pointer.close()
 # Create API database
 db_filename = 'news.db'
 create_str = '''CREATE TABLE IF NOT EXISTS news (
-                 url TEXT PRIMARY KEY,
-                 contents TEXT NOT NULL,
-                 publishedAt DATETIME
-                 )
-            '''
+                url TEXT,
+                score REAL,
+                publishedAt DATETIME
+                )
+            ''' # index INTEGER PRIMARY KEY
 tweeting.create_db(db_filename, create_str)
 
 periodicity_s = 3600
 max_time = 7*24*3600
 
-thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, error_log_filename, error_log_pointer, dbg_mode=True)
+thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, error_log_filename, error_log_pointer, db_filename, dbg_mode=True)
 
 print('Starting')
 thread.start()

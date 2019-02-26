@@ -23,10 +23,27 @@ def create_db(db_filename, create_str):
 def save_news(db_filename, article_dict):
     ''' Insert article_dict into news
 
-    P
+    Parameters
+    ----------------
 
     '''
-    a=1
+    conn = sq.connect(db_filename)
+    c = conn.cursor()
+    for key, value in article_dict.iteritems():
+        insert_string = '''INSERT INTO news(
+                        url,
+                        score,
+                        publishedAt)
+                        VALUES(
+                        {0},
+                        {1},
+                        {2},
+                        )
+                        '''.format(key,value[0],value[-1])
+
+    c.execute()
+    conn.commit()
+    conn.close()
 
 # Class for repetitive actions
 class RepeatEvery(threading.Thread):
@@ -54,7 +71,8 @@ class RepeatEvery(threading.Thread):
     def stop(self):
         self.runable = False
 
-def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer, load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
+def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer, db_filename,
+load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     """
     Tweet a single news story drawn randomly, weighted by a QALY
 
@@ -65,6 +83,7 @@ def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer,
     qaly_path : A string, directory of the QALY table
     error_log_filename : A string, file name for error log
     error_log_pointer : An IO pointer, the pointer to the error log
+    db_filename : A string, the name of the news database
     load_articles : A bool, if true, load a database of URLs
     qaly_thresh : A float, threshold on qalys to tweet
     sample_log_qalys : A bool, sample the qalys in log-space
@@ -92,7 +111,7 @@ def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer,
         article_dict = score_articles.score_all(article_dict, qaly_scorer)
         v = article_dict.values()
         v = list(v)
-        qalys_scores = np.array([ a[0] for a in v ] )
+        qalys_scores = np.array([a['article_score'] for a in v])
         qaly_total = qalys_scores.sum()
         if qaly_total < qaly_thresh: # there aren't enough newsworthy stories
             output=tweepyapi.update_status("I didn't find anything interesting at " + str(datetime.datetime.now()))
