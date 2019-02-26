@@ -1,4 +1,5 @@
 rat_news_creds*
 **/.ipynb_checkpoints
 **/__pycache__
-test.db_
+news.db
+error_log.txt

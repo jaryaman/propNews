@@ -5,7 +5,7 @@ def get_results(apiKey, page_limit_per_request=10, results_per_page=100):
     """Queries NewsAPI for articles up to page_limit_per_request (max 50) and
     returns a dictionary mapping URL: content."""
 
-    dict_url_desc = {}  # stores articles indexed by URL
+    article_dict = {}  # stores articles indexed by URL
     # Iterate over pages - rate limited
     for i in range(page_limit_per_request):
         try:
@@ -29,12 +29,13 @@ def get_results(apiKey, page_limit_per_request=10, results_per_page=100):
                 desc = article['description']
                 content = article['content']
                 url = article['url']
+                publishedAt = article['publishedAt'][:-1]
                 if content is not None:
-                    dict_url_desc[url] = desc + ' ' + content
+                    article_dict[url] = {'content':desc + ' ' + content,
+                                        'published_at':publishedAt}
                 else:
-                    dict_url_desc[url] = desc
-
+                    article_dict[url] = {'content':desc,
+                                        'published_at':publishedAt}
         except KeyError:
             break
-
-    return dict_url_desc
+    return article_dict
