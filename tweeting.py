@@ -1,5 +1,5 @@
 import threading, time, datetime
-import get_articles, score_articles
+import get_articles, get_new_articles, score_articles
 import pickle
 import numpy as np
 from pdb import set_trace
@@ -12,6 +12,10 @@ def create_db(db_filename, create_str):
     Parameters
     ----------------
     db_filename : A string, the name of the database to create
+
+    Returns
+    ----------------
+    return_status : An bool, True if database is created, False if not
     """
     if not os.path.exists(db_filename):
         conn = sq.connect(db_filename)
@@ -19,6 +23,9 @@ def create_db(db_filename, create_str):
         c.execute(create_str)
         conn.commit()
         conn.close()
+        return True
+    else:
+        return False
 
 def add_quotes(s):
     return '"'+s+'"'
@@ -73,8 +80,8 @@ class RepeatEvery(threading.Thread):
     def stop(self):
         self.runable = False
 
-def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer, db_filename,
-load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
+def tweet_news(tweepyapi,apiKey,qaly_path,error_log_filename, error_log_pointer, db_filename, is_first_time_setup,
+qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     """
     Tweet a single news story drawn randomly, weighted by a QALY
 
@@ -86,19 +93,15 @@ load_articles = False, qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False)
     error_log_filename : A string, file name for error log
     error_log_pointer : An IO pointer, the pointer to the error log
     db_filename : A string, the name of the news database
-    load_articles : A bool, if true, load a database of URLs
+    is_first_time_setup : A bool, True if this is the first time the news databse has been created
     qaly_thresh : A float, threshold on qalys to tweet
     sample_log_qalys : A bool, sample the qalys in log-space
     dbg_mode : A bool, enter debug mode. Samples fewer pages from the API, since we have a daily budget
     """
-    if load_articles:
-        pickled_file = open('dict_url_desc_out.pkl', 'rb')
-        article_dict = pickle.load(pickled_file)
+    if dbg_mode:
+        article_dict = get_articles.get_results(apiKey,page_limit_per_request = 1,results_per_page=10)
     else:
-        if dbg_mode:
-            article_dict = get_articles.get_results(apiKey,page_limit_per_request = 1,results_per_page=10)
-        else:
-            article_dict = get_articles.get_results(apiKey)
+        article_dict = get_articles.get_results(apiKey)
     if len(article_dict) < 5: # assume something went wrong with the API
         output=tweepyapi.update_status("Something went wrong with the API at " + str(datetime.datetime.now()))
         error_log_pointer = open(error_log_filename,'a')
