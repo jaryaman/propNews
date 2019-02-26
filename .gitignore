@@ -1,0 +1,4 @@
+rat_news_creds*
+**/.ipynb_checkpoints
+**/__pycache__
+test.db_
