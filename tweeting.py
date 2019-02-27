@@ -1,5 +1,5 @@
 import threading, time, datetime
-import get_articles, get_new_articles, score_articles
+import get_articles, score_articles
 import pickle
 import numpy as np
 from pdb import set_trace
@@ -101,7 +101,11 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     if dbg_mode:
         article_dict = get_articles.get_results(apiKey,page_limit_per_request = 1,results_per_page=10)
     else:
-        article_dict = get_articles.get_results(apiKey)
+        if is_first_time_setup:
+            article_dict = get_articles.get_results(apiKey)
+        else:
+            last_published = find_API_publish_time(db_filename)
+            article_dict = get_articles.get_results(apiKey,last_published)
     if len(article_dict) < 5: # assume something went wrong with the API
         output=tweepyapi.update_status("Something went wrong with the API at " + str(datetime.datetime.now()))
         error_log_pointer = open(error_log_filename,'a')
