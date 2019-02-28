@@ -24,6 +24,7 @@ def find_API_publish_time(db_filename, lag_mins=20):
 
     Returns
     ------------
+    query_from : A string of the form YYYY-MM-DDTHH:MM:SS, the time to query the API from
 
     """
 
@@ -42,24 +43,29 @@ def find_API_publish_time(db_filename, lag_mins=20):
         dt_format = "%Y-%m-%dT%H:%M:%S"
         date_latest_dtm = datetime.datetime.strptime(date_latest, dt_format)
         last_published_dtm = date_latest_dtm + datetime.timedelta(minutes=-lag_mins)
-        last_published = datetime.datetime.strftime(last_published_dtm,dt_format)
-        return last_published
+        query_from = datetime.datetime.strftime(query_from_dtm,dt_format)
+        return query_from
     else:
         raise Exception('News database not found!')
 
 
 
-def get_results(apiKey, last_published=None, page_limit_per_request=10, results_per_page=100): #last published needs an input from the dataframe of the most recent article we have access to
+def get_results(apiKey, query_from=None, page_limit_per_request=10, results_per_page=100):
     """
     Query NewsAPI for URLs and metadata
 
     Parameters
     ---------------
+    apiKey : A string, the NewsAPI API key
+    query_from : A string, the time to query the API from of the form YYYY-MM-DDTHH:MM:SS
+    page_limit_per_request : An int, Maximum number of pages to request from the API
+    results_per_page : An int, Maximum number of results to request per page from the API
 
     Returns
     ---------------
-
-
+    article_dict : A dict of dicts, the keys are URLs, and the values are dicts containing
+        contents : A string, the contents of the URL
+        published_at : A string, the datetime the article was published of the form YYYY-MM-DDTHH:MM:SS
     """
 
     article_dict = {}  # stores articles indexed by URL
@@ -72,8 +78,8 @@ def get_results(apiKey, last_published=None, page_limit_per_request=10, results_
             page_str = 'page={}&'.format(p)
             pagesize_str = 'pagesize={}&'.format(results_per_page)
             apikey_str = 'apiKey={}'.format(apiKey)
-            if last_published is not None:
-                last_published_str = 'from={}&'.format(last_published)
+            if query_from is not None:
+                query_from_str = 'from={}&'.format(query_from+'Z')
                 query = ('https://newsapi.org/v2/everything?sources=bbc-news&'# can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
                          +page_str+
                          +last_published_str+
