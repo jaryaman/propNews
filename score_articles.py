@@ -1,5 +1,8 @@
 from keyword_parser import parse_keywords
 from pdb import set_trace
+
+# TODO: Comment these functions
+
 def get_qaly_data(filepath):
     qaly_scorer = {}
     with open(filepath, 'r') as infile:

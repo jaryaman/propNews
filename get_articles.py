@@ -57,7 +57,7 @@ def get_topic_string(topics):
 
     Parameters
     --------------
-    topics : A list of strings
+    topics : A list of strings, the topics associated with the URL
 
     Returns
     --------------
@@ -82,6 +82,7 @@ def update_news_db(db_filename, article_dict):
     db_filename : A string, the name of the news database
     article_dict: A dict of dicts, the keys are URLS, the values are dicts which must contain at least:
         score : A float, the score of the article
+        topics : A list of strings, the topics associated with the URL
         published_at : A string, of the form YYYY-MM-DDTHH:MM:SS, the datetime the article was published
     '''
     conn = sq.connect(db_filename)
@@ -108,11 +109,13 @@ def update_news_db(db_filename, article_dict):
 
 def get_results(apiKey,db_filename,qaly_path, query_from=None, page_limit_per_request=10, results_per_page=100):
     """
-    Query NewsAPI for URLs and metadata
+    Query NewsAPI for URLs and metadata, score articles, and save to news database
 
     Parameters
     ---------------
     apiKey : A string, the NewsAPI API key
+    db_filename : A string, the name of the news database
+    qaly_path : A string, directory of the QALY table
     query_from : A string, the time to query the API from, of the form YYYY-MM-DDTHH:MM:SS
     page_limit_per_request : An int, Maximum number of pages to request from the API
     results_per_page : An int, Maximum number of results to request per page from the API

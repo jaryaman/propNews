@@ -59,7 +59,6 @@ class RepeatEvery(threading.Thread):
         self.runable = False
 
 def fetch_news_since(db_filename, query_db_from):
-    # TODO: Finish this function
     """
     Fetch news since a particular time from database
 
@@ -70,7 +69,7 @@ def fetch_news_since(db_filename, query_db_from):
 
     Returns
     -------------
-    recent_news : A [XXXXXXXXXX] (TODO: Finish)
+    recent_news : A list of tuples corresponding to entries of the news database, where the date published is greater than query_from
 
     """
     conn = sq.connect(db_filename)
@@ -86,7 +85,7 @@ def fetch_news_since(db_filename, query_db_from):
 def tweet_news(tweepyapi,apiKey,qaly_path, db_filename, is_first_time_setup, tweet_time_window, news_refresh_period,
 qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     """
-    Tweet a single news story drawn randomly, weighted by a QALY
+    Tweet a single news story drawn randomly, weighted by a QALY, over a time window extending into the past
 
     Parameters
     --------------
@@ -112,7 +111,7 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
             print('Building database. This may take some time...')
             get_articles.get_results(apiKey,db_filename,qaly_path)
 
-    # Check if the database is out of date
+    # Check if the news database is out of date
     last_article_publish_time = get_articles.find_newest_db_article(db_filename, lag_mins=0)
     last_article_publish_time_dtm = datetime.datetime.strptime(last_article_publish_time, dt_format)
     query_db_from = datetime.datetime.now() - datetime.timedelta(hours=tweet_time_window)
@@ -130,9 +129,7 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
         print('DBG: Skipping time window check')
 
 
-    # Pull articles that are within the time window
-
-    # Tweet
+    # Pull articles that are within the tweet time window
     recent_news = fetch_news_since(db_filename, query_db_from)
 
     qalys_scores = np.array([a[1] for a in recent_news])
@@ -142,9 +139,12 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
          str(datetime.datetime.now()))
         print('No news\n')
         return
+
+    # Sample articles according to score
     if sample_log_qalys:
         qalys_scores = np.log(qalys_scores + 1.0) # sample qalys in log-space
 
+    # Tweet
     article_choice_index = np.random.choice(len(qalys_scores), p=qalys_scores/qalys_scores.sum())
     url = recent_news[article_choice_index][0]
     topics = recent_news[article_choice_index][2]
