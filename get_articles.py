@@ -145,7 +145,7 @@ def get_results(apiKey,db_filename,qaly_path, query_from=None, page_limit_per_re
             js = response.json()
             # store the maximum number of pages which can be accessed from this call
             max_page = js['totalResults']/results_per_page + 1
-            print('Accessing page {0} of {1}'.format(p, js['totalResults'] % results_per_page))
+            print('Accessing page {0} of {1}'.format(p,max_page))
 
             # Iterate over results in a page
             for k in range(len(js['articles'])):
