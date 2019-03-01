@@ -95,7 +95,7 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     qaly_path : A string, directory of the QALY table
     db_filename : A string, the name of the news database
     is_first_time_setup : A bool, True if this is the first time the news databse has been created
-    tweet_time_window : A float, the number of hours prior to now to draw from the database to tweet from
+    tweet_time_window : A float, the number of hours prior to now to draw from the news database to tweet from
     news_refresh_period : A float,
 
     qaly_thresh : A float, threshold on qalys to tweet
