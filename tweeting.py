@@ -103,8 +103,6 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     """
 
     if is_first_time_setup:
-        set_trace()
-        assert False
         if dbg_mode:
             print('DBG MODE')
             get_articles.get_results(apiKey,db_filename,qaly_path,query_from=query_from,
