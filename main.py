@@ -49,17 +49,13 @@ tweepyapi = tweepy.API(auth)
 
 qaly_path = 'global_prios/global_prios.csv'
 
-# Set up error log
-error_log_filename = 'error_log.txt'
-error_log_pointer = open(error_log_filename,'w')
-error_log_pointer.write('Type,Time,Topic\n')
-error_log_pointer.close()
 
 # Create API database
 db_filename = 'news.db'
 create_str = '''CREATE TABLE IF NOT EXISTS news (
                 url TEXT PRIMARY KEY,
                 score REAL NOT NULL,
+                topics TEXT,
                 publishedAt DATETIME
                 )
             ''' # index INTEGER PRIMARY KEY
@@ -68,11 +64,13 @@ is_first_time_setup = tweeting.create_db(db_filename, create_str)
 periodicity_s = 3600
 max_time = 7*24*3600
 
-thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, error_log_filename, error_log_pointer, db_filename, is_first_time_setup,
-dbg_mode = True)
+tweet_time_window = 24.0 # hours
+news_refresh_period = 24.0/3 # hours
+
+tweetthread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, db_filename, is_first_time_setup, tweet_time_window, news_refresh_period, dbg_mode=False)
 
 print('Starting')
-thread.start()
-thread.join(max_time)
-thread.stop()
+tweetthread.start()
+tweetthread.join(max_time)
+tweetthread.stop()
 print('Stopped')
