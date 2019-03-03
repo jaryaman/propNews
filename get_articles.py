@@ -1,6 +1,6 @@
 import requests
 import pickle
-from get_full_content import get_bbc_content
+from get_full_content import get_url_content
 from pdb import set_trace
 import os
 import sqlite3 as sq
@@ -107,7 +107,7 @@ def update_news_db(db_filename, article_dict):
     conn.close()
     print('News db updated!')
 
-def get_results(apiKey,db_filename,qaly_path, query_from=None, page_limit_per_request=10, results_per_page=100):
+def get_results(apiKey,db_filename,qaly_path,url_path, query_from=None, page_limit_per_request=10, results_per_page=100):
     """
     Query NewsAPI for URLs and metadata, score articles, and save to news database
 
@@ -116,6 +116,7 @@ def get_results(apiKey,db_filename,qaly_path, query_from=None, page_limit_per_re
     apiKey : A string, the NewsAPI API key
     db_filename : A string, the name of the news database
     qaly_path : A string, directory of the QALY table
+    url_path : A string, directory of the url lookup table
     query_from : A string, the time to query the API from, of the form YYYY-MM-DDTHH:MM:SS
     page_limit_per_request : An int, Maximum number of pages to request from the API
     results_per_page : An int, Maximum number of results to request per page from the API
@@ -157,7 +158,88 @@ def get_results(apiKey,db_filename,qaly_path, query_from=None, page_limit_per_re
                 article = js['articles'][k]
                 desc = article['description']
                 url = article['url']
-                content = get_bbc_content(url)
+                content = get_url_content(url_path,url)
+                publishedAt = article['publishedAt'][:-1]
+                if content is not None:
+                    article_dict[url] = {'content':desc + ' ' + content,
+                                        'published_at':publishedAt}
+                else:
+                    article_dict[url] = {'content':desc,
+                                        'published_at':publishedAt}
+            qaly_scorer = score_articles.get_qaly_data(qaly_path)
+            article_dict = score_articles.score_all(article_dict, qaly_scorer)
+            update_news_db(db_filename, article_dict)
+        except KeyError:
+            print('WARNING: Key error in calling API. Some articles may be lost.')
+            break
+
+        # Prevent any calls which would exceed the number of results in total
+        if p >= max_page:
+            break
+
+def get_many_results(apiKey,db_filename,qaly_path,url_path, query_from=None, page_limit_per_request=10, results_per_page=100):
+    """
+    Query NewsAPI for URLs and metadata, score articles, and save to news database
+
+    Parameters
+    ---------------
+    apiKey : A string, the NewsAPI API key
+    db_filename : A string, the name of the news database
+    qaly_path : A string, directory of the QALY table
+    url_path : A string, directory of the url lookup table
+    query_from : A string, the time to query the API from, of the form YYYY-MM-DDTHH:MM:SS
+    page_limit_per_request : An int, Maximum number of pages to request from the API
+    results_per_page : An int, Maximum number of results to request per page from the API
+
+    """
+
+    # Iterate over pages - rate limited
+    for i in range(page_limit_per_request):
+        article_dict = {}  # stores articles indexed by URL. Reset every page to spare memory
+        try:
+            p = i + 1
+            page_str = 'page={}&'.format(p)
+            pagesize_str = 'pagesize={}&'.format(results_per_page)
+            apikey_str = 'apiKey={}'.format(apiKey)
+            source_str = 'sources='
+            with open(url_path, 'r') as infile:
+                for linenum, line in enumerate(infile):
+                    if linenum == 0:
+                        continue
+                    source,keyword, delimiter = line.split(',')
+                    source_str += source + ','
+            source_str += '&'
+            
+            if query_from is not None:
+                query_from_str = 'from={}&'.format(query_from)
+                query = ('https://newsapi.org/v2/everything?'
+                         +source_str
+                         +page_str
+                         +query_from_str+
+                         'sort=date_published&'
+                         +pagesize_str
+                         +apikey_str) # must go at the end
+            else:
+                query = ('https://newsapi.org/v2/everything?'
+                         +source_str
+                         +page_str+
+                         'sort=date_published&'
+                         +pagesize_str
+                         +apikey_str) # must go at the end
+            response = requests.get(query)
+            js = response.json()
+            # store the maximum number of pages which can be accessed from this call
+            max_page = js['totalResults']/results_per_page + 1
+            print('Accessing page {0}'.format(p))
+
+            # Iterate over results in a page
+            for k in range(len(js['articles'])):
+                if k % 20 == 0:
+                    print('Processing result {0} of {1}'.format(k, len(js['articles'])))
+                article = js['articles'][k]
+                desc = article['description']
+                url = article['url']
+                content = get_url_content(url_path,url)
                 publishedAt = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content':desc + ' ' + content,

@@ -1,0 +1,10 @@
+source,keyword,delimiter
+bbc-news,bbc,story-body__inner
+the-guardian-uk,guardian,article__body
+reuters,reuters,StandardArticleBody_container
+fow-news,foxnews,article-content-wrap
+medical-news-today,medicalnewstoday,article_body
+techcrunch,techcrunch,article-content
+the-huffington-post,huffingtonpost,post-contents
+vice-news,news.vice,_6htn2u
+vice-news,www.vice,article__body
