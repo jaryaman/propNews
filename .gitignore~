@@ -3,4 +3,3 @@ rat_news_creds*
 **/__pycache__
 news.db
 error_log.txt
-*.png

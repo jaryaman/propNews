@@ -104,7 +104,7 @@ def tokenize_text(text):
 
 #Read in and process the data:
 #file_path = 'headline_examples.csv' 
-file_path = 'headlines_two_class.csv'
+file_path = 'training_new_corpus/headlines_two_class.csv'
 df = read_and_process(file_path)
 
 #split the data:
@@ -114,9 +114,10 @@ train, test = train_test_split(df, test_size=0.3, random_state=42)
 train_tagged = train.apply(lambda r: TaggedDocument(words=tokenize_text(r['narrative']), tags=[r.Topic]), axis=1)
 test_tagged = test.apply(lambda r: TaggedDocument(words=tokenize_text(r['narrative']), tags=[r.Topic]), axis=1)
 
-    
+
+dimensions = 2
 #Initialize and train the model: (mindlessly using parameters from the original source of the code)
-model_dbow = Doc2Vec(dm=0, vector_size=300, negative=5, hs=0, min_count=2, sample = 0, workers=cores)
+model_dbow = Doc2Vec(dm=0, vector_size=dimensions, negative=5, hs=0, min_count=2, sample = 0, workers=cores)
 model_dbow.build_vocab([x for x in tqdm(train_tagged.values)]) 
 
 
@@ -129,6 +130,21 @@ for epoch in range(30):
 #Given the model we now return the vectors and labels:
 y_train, X_train = vec_for_learning(model_dbow, train_tagged)
 y_test, X_test = vec_for_learning(model_dbow, test_tagged)
+
+Test_Positions = list( X_train )
+
+def labeler(label) : 
+	if label == "Climate Change" : 
+		return "b"
+	else :
+		return "r"
+
+Labels = [ labeler(k) for k in y_train ] 
+plt.scatter( np.transpose(Test_Positions)[0] ,np.transpose(Test_Positions)[1] , c=Labels ) 
+plt.show()
+
+#Plot the coordinates:
+pdb.set_trace()
 
 print("TEST TAGGED")
 print(test_tagged)
