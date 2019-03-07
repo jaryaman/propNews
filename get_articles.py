@@ -111,7 +111,7 @@ def update_news_db(db_filename, article_dict):
     print('News db updated!')
 
 
-def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page_limit_per_request=10, 
+def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page_limit_per_request=10,
                 results_per_page=100):
     """
     Query NewsAPI for URLs and metadata, score articles, and save to news database
@@ -135,21 +135,21 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
             p = i + 1
             page_str = 'page={}&'.format(p)
             pagesize_str = 'pagesize={}&'.format(results_per_page)
-            api_key_str = 'api_key={}'.format(api_key)
+            api_key_str = 'apiKey={}'.format(api_key)
             if query_from is not None:
                 query_from_str = 'from={}&'.format(query_from)
-                query = ('https://newsapi.org/v2/everything?sources=bbc-news&'# can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
+                query = ('https://newsapi.org/v2/everything?sources=bbc-news&' # can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
                          + page_str
                          + query_from_str +
                          'sort=date_published&'
                          + pagesize_str
-                         + api_key_str) # must go at the end
+                         + api_key_str)
             else:
-                query = ('https://newsapi.org/v2/everything?sources=bbc-news&'# can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
+                query = ('https://newsapi.org/v2/everything?sources=bbc-news&' # can change source here to guardian-uk or reuters so long as the appropriate content scraping function is used
                          + page_str +
                          'sort=date_published&'
                          + pagesize_str
-                         + api_key_str) # must go at the end
+                         + api_key_str)
             response = requests.get(query)
             js = response.json()
             # store the maximum number of pages which can be accessed from this call
@@ -163,7 +163,7 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
                 article = js['articles'][k]
                 desc = article['description']
                 url = article['url']
-                content = get_url_content(url_path,url)
+                content = get_url_content(url_path, url)
                 published_at = article['published_at'][:-1]
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
