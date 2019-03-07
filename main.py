@@ -48,7 +48,7 @@ auth.set_access_token(access_token, access_token_secret)
 tweepyapi = tweepy.API(auth)
 
 qaly_path = 'global_prios/global_prios.csv'
-url_path = 'url_content_lookup.csv'
+
 
 # Create API database
 db_filename = 'news.db'
@@ -67,7 +67,7 @@ max_time = 7*24*3600
 tweet_time_window = 3*24.0 # hours
 news_refresh_period = 24.0/3 # hours
 
-tweetthread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, url_path, db_filename, is_first_time_setup, tweet_time_window, news_refresh_period, dbg_mode=False)
+tweetthread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, db_filename, is_first_time_setup, tweet_time_window, news_refresh_period, dbg_mode=False)
 
 print('Starting')
 tweetthread.start()
