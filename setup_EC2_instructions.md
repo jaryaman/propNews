@@ -27,6 +27,6 @@ easy_install tweepy
 
 6. Go to https://developer.twitter.com/en/apply-for-access and make a developer account. For the Callback URL, put anything e.g. http://wwwf.imperial.ac.uk/~nsjones/jones.htm. Generate Consumer API keys and Access token & access token secret.
 
-# TODO: Give details on making your own NewsAPI API keys
+(TODO: Give details on making your own NewsAPI API keys)
 
 7. Make your own version of `twitter_API_keys.txt` and run `main.py`
