@@ -83,7 +83,7 @@ auth.set_access_token(access_token, access_token_secret)
 tweepyapi = tweepy.API(auth)
 
 qaly_path = 'global_prios/global_prios.csv'
-url_path = 'url_content_lookup.csv'
+
 
 # Create API database
 db_filename = 'news.db'

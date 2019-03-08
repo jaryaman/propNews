@@ -124,7 +124,6 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
     api_key : A string, the NewsAPI API key
     db_filename : A string, the name of the news database
     qaly_path : A string, directory of the QALY table
-    url_path : A string, directory of the url lookup table
     query_from : A string, the time to query the API from, of the form YYYY-MM-DDTHH:MM:SS
     page_limit_per_request : An int, Maximum number of pages to request from the API
     results_per_page : An int, Maximum number of results to request per page from the API

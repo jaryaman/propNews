@@ -97,7 +97,6 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_ti
     tweepyapi : tweepy.api.API object, contains Twitter API credentials and allows tweeting
     api_key : A string, the API key of the news API
     qaly_path : A string, directory of the QALY table
-    url_path : A string, directory of the url lookup table
     db_filename : A string, the name of the news database
     is_first_time_setup : A bool, True if this is the first time the news database has been created
     tweet_time_window : A float, the number of hours prior to now to draw from the news database to tweet from
