@@ -102,9 +102,9 @@ def update_news_db(db_filename, article_dict):
                         {2},
                         {3}
                         )
-                        '''.format(add_quotes(url),url_dict['score'],
+                        '''.format(add_quotes(url), url_dict['score'],
                                    add_quotes(get_topic_string(url_dict['topics'])),
-                                   add_quotes(url_dict['published_at']))
+                                   add_quotes(url_dict['publishedAt']))
         c.execute(insert_string)
     conn.commit()
     conn.close()
@@ -164,17 +164,18 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
                 desc = article['description']
                 url = article['url']
                 content = get_url_content(url_path, url)
-                published_at = article['published_at'][:-1]
+                published_at = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
-                                         'published_at': published_at}
+                                         'publishedAt': published_at}
                 else:
                     article_dict[url] = {'content': desc,
-                                         'published_at': published_at}
+                                         'publishedAt': published_at}
             qaly_scorer = score_articles.get_qaly_data(qaly_path)
             article_dict = score_articles.score_all(article_dict, qaly_scorer)
             update_news_db(db_filename, article_dict)
-        except KeyError:
+        except KeyError as e:
+            print(e)
             print('WARNING: Key error in calling API. Some articles may be lost.')
             break
 
@@ -185,6 +186,8 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
 
 def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None, page_limit_per_request=10,
                      results_per_page=100):
+    # TODO: Wire in this function into tweeting.
+    # TODO: Put source into article_dict so I can update the news.db
     """
     Query NewsAPI for URLs and metadata, score articles, and save to news database
 
@@ -246,14 +249,14 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
                 article = js['articles'][k]
                 desc = article['description']
                 url = article['url']
-                content = get_url_content(url_path,url)
-                published_at = article['published_at'][:-1]
+                content = get_url_content(url_path, url)
+                published_at = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
-                                         'published_at': published_at}
+                                         'publishedAt': published_at}
                 else:
                     article_dict[url] = {'content': desc,
-                                         'published_at': published_at}
+                                         'publishedAt': published_at}
             qaly_scorer = score_articles.get_qaly_data(qaly_path)
             article_dict = score_articles.score_all(article_dict, qaly_scorer)
             update_news_db(db_filename, article_dict)

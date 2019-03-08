@@ -1,33 +1,42 @@
 import tweepy
 import tweeting
-# from pdb import set_trace
-
-'''
-To run this script:
-
-$ tmux
-$ python main.py
-
-Then detach the session by typing ctrl+b d
-'''
-
-# Make changes to functions on the fly
-# from IPython import get_ipython
-# ipython = get_ipython()
-# ipython.magic("reload_ext autoreload")
-# ipython.magic("autoreload 2")
-
 import getopt
 import sys
 
 
 def usage():
     print("""propNews -- tweet news stories periodically
-    To run:
-        $ python main.py --options
-    Options:
-    -d		run in debug mode
-    -h      help
+    
+    Requirements
+    -----------------
+    
+    newsapi_key.txt : A text file, in the directory above propNews, contains API keys.
+    
+    Deployment
+    -----------------
+    
+    To run on an AWS instance:
+        $ tmux
+        $ python main.py [-options]
+    and hit "ctrl+b d" to detach. Then
+        $ logout 
+    
+    To run locally:
+        $ python main.py [-options]    
+        
+    Options
+    ------------------
+    
+    -d		Run in debug mode. 
+    
+            Only lightly call NewsAPI. You may want to run
+            $ mv news.db news.db.temp
+            before running the script in debug mode. The 
+            script will most likely end in "No news".
+            
+    -h      Help.
+    
+            Prints this message and exits.
     """)
 
 
@@ -42,7 +51,7 @@ dbg_mode = False
 for opt, arg in opts:
     if opt == '-d':
         dbg_mode = True
-    elif opt == 'h':
+    elif opt == '-h':
         usage()
         sys.exit()
     else:
@@ -65,7 +74,7 @@ access_token = credentials[2].split('=')[1]
 access_token_secret = credentials[3].split('=')[1]
 
 # Get news API key
-fp = open(credentials_dir+news_api_filename,'r')
+fp = open(credentials_dir+news_api_filename, 'r')
 apiKey = fp.read().split()[0]
 
 # Set twitter credentials
