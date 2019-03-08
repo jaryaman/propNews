@@ -9,6 +9,7 @@ import datetime
 
 dt_format = "%Y-%m-%dT%H:%M:%S"
 
+
 def create_db(db_filename, create_str):
     """ Create a SQLite database
 
@@ -51,12 +52,15 @@ class RepeatEvery(threading.Thread):
         self.args = args          # optional positional argument(s) for call
         self.kwargs = kwargs      # optional keyword argument(s) for call
         self.runable = True
+
     def run(self):
         while self.runable:
             self.func(*self.args, **self.kwargs)
             time.sleep(self.interval)
+
     def stop(self):
         self.runable = False
+
 
 def fetch_news_since(db_filename, query_db_from):
     """
@@ -65,7 +69,7 @@ def fetch_news_since(db_filename, query_db_from):
     Parameters
     -------------
     db_filename : A string, the name of the news database
-    query_from : A string of the form YYYY-MM-DDTHH:MM:SS, the earliest time to query the database from
+    query_db_from : A string of the form YYYY-MM-DDTHH:MM:SS, the earliest time to query the database from
 
     Returns
     -------------
@@ -75,41 +79,44 @@ def fetch_news_since(db_filename, query_db_from):
     conn = sq.connect(db_filename)
     c = conn.cursor()
     date_query = '''SELECT * FROM news
-                    WHERE publishedAt > datetime('{}')
+                    WHERE published_at > datetime('{}')
     '''.format(datetime.datetime.strftime(query_db_from,dt_format))
     c.execute(date_query)
     recent_news = c.fetchall()
     conn.close()
     return recent_news
 
-def tweet_news(tweepyapi,apiKey,qaly_path, db_filename, is_first_time_setup, tweet_time_window, news_refresh_period,
-qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
+
+def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_time_setup, tweet_time_window,
+               news_refresh_period, qaly_thresh=1.0, sample_log_qalys=True, dbg_mode=False):
     """
     Tweet a single news story drawn randomly, weighted by a QALY, over a time window extending into the past
 
     Parameters
     --------------
     tweepyapi : tweepy.api.API object, contains Twitter API credentials and allows tweeting
-    apiKey : A string, the API key of the news API
+    api_key : A string, the API key of the news API
     qaly_path : A string, directory of the QALY table
     db_filename : A string, the name of the news database
-    is_first_time_setup : A bool, True if this is the first time the news databse has been created
+    is_first_time_setup : A bool, True if this is the first time the news database has been created
     tweet_time_window : A float, the number of hours prior to now to draw from the news database to tweet from
-    news_refresh_period : A float,
+    news_refresh_period : A float, the period in hours between refreshing the news database
 
     qaly_thresh : A float, threshold on qalys to tweet
     sample_log_qalys : A bool, sample the qalys in log-space
+    dbg_mode : A bool, if True enter debug mode
     """
 
     if is_first_time_setup:
         if dbg_mode:
             print('DBG MODE')
-            get_articles.get_results(apiKey,db_filename,qaly_path,query_from=query_from,
-                                                    page_limit_per_request=1,
-                                                    results_per_page=10)
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, page_limit_per_request=1,
+                                          results_per_page=10)
+            # get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, page_limit_per_request=1,
+            #                               results_per_page=10)
         else:
             print('Building database. This may take some time...')
-            get_articles.get_results(apiKey,db_filename,qaly_path)
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path)
 
     # Check if the news database is out of date
     last_article_publish_time = get_articles.find_newest_db_article(db_filename, lag_mins=0)
@@ -123,11 +130,10 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
             print('Last published article: {}'.format(last_article_publish_time))
             print('Time difference to now: {} (hours)'.format(hours_since_last_article))
             print('News db outdated. Updating...')
-            query_from = get_articles.find_newest_db_article(db_filename, lag_mins=20) # TODO: should pass lag in as a variable
-            get_articles.get_results(apiKey,db_filename,qaly_path,query_from=query_from)
+            query_from = get_articles.find_newest_db_article(db_filename, lag_mins=20)  # TODO: should pass lag in as a variable
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, query_from=query_from)
     else:
         print('DBG: Skipping time window check')
-
 
     # Pull articles that are within the tweet time window
     recent_news = fetch_news_since(db_filename, query_db_from)
@@ -135,8 +141,8 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     qalys_scores = np.array([a[1] for a in recent_news])
     qaly_total = qalys_scores.sum()
     if qaly_total < qaly_thresh: # there aren't enough newsworthy stories
-        output=tweepyapi.update_status("I didn't find anything interesting in the past {} hrs, at:".format(tweet_time_window) +
-         str(datetime.datetime.now()))
+        _ = tweepyapi.update_status("I didn't find anything interesting in the past {0} hrs, at: {1}".format(
+            tweet_time_window, str(datetime.datetime.now())))
         print('No news\n')
         return
 
@@ -148,6 +154,6 @@ qaly_thresh = 1.0, sample_log_qalys=True, dbg_mode=False):
     article_choice_index = np.random.choice(len(qalys_scores), p=qalys_scores/qalys_scores.sum())
     url = recent_news[article_choice_index][0]
     topics = recent_news[article_choice_index][2]
-    output=tweepyapi.update_status(topics +' {}'.format(str(datetime.datetime.now())) + '\n' + url)
+    _ = tweepyapi.update_status(topics + ' {}'.format(str(datetime.datetime.now())) + '\n' + url)
 
     print('Done!')
