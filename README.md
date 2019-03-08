@@ -10,11 +10,9 @@ repository
 - `newsapi_key.txt`
 - `twitter_API_keys.txt`
 
-see `Dropbox/hackathon_qaly/Tweeting_technical_stuff/newsapi_key.txt`
-
-These files are kept in the directory above this repository to avoid accidental
+see `Dropbox/hackathon_qaly/Tweeting_technical_stuff` which contains these
+files. These files are kept in the directory above this repository to avoid accidental
 commits to GitHub. Also, the `tweepy` module is required:
-
 ```
 $ easy_install tweepy
 ```
