@@ -21,7 +21,7 @@ is the final line of `.bashrc`, or add the line if it isn't. Then,
 ```
 source .bashrc
 rm Anaconda3-2018.12-Linux-x86_64.sh
-git clone https://github.com/tomMcGrath/rationalnews.git
+git clone https://github.com/jaryaman/propNews
 easy_install tweepy
 ```
 
