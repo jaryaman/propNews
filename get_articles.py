@@ -95,16 +95,19 @@ def update_news_db(db_filename, article_dict):
                         url,
                         score,
                         topics,
-                        published_at)
+                        published_at,
+                        source)
                         VALUES(
                         {0},
                         {1},
                         {2},
-                        {3}
+                        {3},
+                        {4}
                         )
                         '''.format(add_quotes(url), url_dict['score'],
                                    add_quotes(get_topic_string(url_dict['topics'])),
-                                   add_quotes(url_dict['publishedAt']))
+                                   add_quotes(url_dict['publishedAt']),
+                                   add_quotes(url_dict['source']))
         c.execute(insert_string)
     conn.commit()
     conn.close()
@@ -163,14 +166,17 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
                 article = js['articles'][k]
                 desc = article['description']
                 url = article['url']
+                source = article['source']['id']
                 content = get_url_content(url_path, url)
                 published_at = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
-                                         'publishedAt': published_at}
+                                         'publishedAt': published_at,
+                                         'source': source}
                 else:
                     article_dict[url] = {'content': desc,
-                                         'publishedAt': published_at}
+                                         'publishedAt': published_at,
+                                         'source': source}
             qaly_scorer = score_articles.get_qaly_data(qaly_path)
             article_dict = score_articles.score_all(article_dict, qaly_scorer)
             update_news_db(db_filename, article_dict)
@@ -186,8 +192,6 @@ def get_results(api_key, db_filename, qaly_path, url_path, query_from=None, page
 
 def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None, page_limit_per_request=10,
                      results_per_page=100):
-    # TODO: Wire in this function into tweeting.
-    # TODO: Put source into article_dict so I can update the news.db
     """
     Query NewsAPI for URLs and metadata, score articles, and save to news database
 
@@ -210,7 +214,7 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
             p = i + 1
             page_str = 'page={}&'.format(p)
             pagesize_str = 'pagesize={}&'.format(results_per_page)
-            api_key_str = 'api_key={}'.format(api_key)
+            api_key_str = 'apiKey={}'.format(api_key)
             source_str = 'sources='
             with open(url_path, 'r') as infile:
                 for linenum, line in enumerate(infile):
@@ -253,14 +257,17 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
                 published_at = article['publishedAt'][:-1]
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
-                                         'publishedAt': published_at}
+                                         'publishedAt': published_at,
+                                         'source': source_str}
                 else:
                     article_dict[url] = {'content': desc,
-                                         'publishedAt': published_at}
+                                         'publishedAt': published_at,
+                                         'source': source_str}
             qaly_scorer = score_articles.get_qaly_data(qaly_path)
             article_dict = score_articles.score_all(article_dict, qaly_scorer)
             update_news_db(db_filename, article_dict)
-        except KeyError:
+        except KeyError as e:
+            print(e)
             print('WARNING: Key error in calling API. Some articles may be lost.')
             break
 

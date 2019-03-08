@@ -4,13 +4,13 @@ import certifi
 import re
 
 
-def get_url_content(url_lookup, url):  # TODO: Fix this function. Currently broken.
+def get_url_content(url_lookup, url):
     """
     Takes a given URl and returns all relevant article content
 
     Parameters
     ----------------
-    url_lookup, path to database of URLs for which content can be taken
+    url_lookup, A string, the path to database of URLs for which content can be taken
     url, url we wish to query
     """
 

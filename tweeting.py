@@ -111,11 +111,13 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_ti
     if is_first_time_setup:
         if dbg_mode:
             print('DBG MODE')
-            get_articles.get_results(api_key, db_filename, qaly_path, url_path, page_limit_per_request=1,
-                                     results_per_page=10)
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, page_limit_per_request=1,
+                                          results_per_page=10)
+            # get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, page_limit_per_request=1,
+            #                               results_per_page=10)
         else:
             print('Building database. This may take some time...')
-            get_articles.get_results(api_key, db_filename, qaly_path, url_path)
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path)
 
     # Check if the news database is out of date
     last_article_publish_time = get_articles.find_newest_db_article(db_filename, lag_mins=0)
@@ -130,7 +132,7 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_ti
             print('Time difference to now: {} (hours)'.format(hours_since_last_article))
             print('News db outdated. Updating...')
             query_from = get_articles.find_newest_db_article(db_filename, lag_mins=20)  # TODO: should pass lag in as a variable
-            get_articles.get_results(api_key, db_filename, qaly_path, url_path, query_from=query_from)
+            get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, query_from=query_from)
     else:
         print('DBG: Skipping time window check')
 
