@@ -5,8 +5,7 @@ import re
 
 
 def get_url_content(url_lookup, url):
-    """
-    Takes a given URl and returns all relevant article content
+    """Takes a given URl and returns all relevant article content
 
     Parameters
     ----------------
