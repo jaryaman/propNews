@@ -173,14 +173,15 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
                 url = article['url']
                 content = get_url_content(url_path, url)
                 published_at = article['publishedAt'][:-1]
+                source_id = article['source']['id']
                 if content is not None:
                     article_dict[url] = {'content': desc + ' ' + content,
                                          'publishedAt': published_at,
-                                         'source': source_str}
+                                         'source': source_id}
                 else:
                     article_dict[url] = {'content': desc,
                                          'publishedAt': published_at,
-                                         'source': source_str}
+                                         'source': source_id}
             qaly_scorer = score_articles.get_qaly_data(qaly_path)
             article_dict = score_articles.score_all(article_dict, qaly_scorer)
             update_news_db(db_filename, article_dict)

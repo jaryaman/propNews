@@ -1,3 +1,31 @@
+import pyparsing
+from itertools import product, chain
+
+
+def unroll(y):
+    if isinstance(y, str):
+        return [y.strip('"')]
+    else:
+        if 'AND' in y and 'OR' in y:
+            raise RuntimeError('check bracketing--cannot have both AND and OR in same clause: %s' % str(y))
+        if 'OR' in y:
+            y = list(filter(lambda a: a != 'OR', y))
+            return list(chain.from_iterable([unroll(a) for a in y]))
+        else:
+            y = list(filter(lambda a: a != 'AND', y))
+            return list(product(*[unroll(a) for a in y]))
+
+
+def flatten(y):
+    if isinstance(y, str):
+        return [y]
+    else:
+        out = list()
+        for a in y:
+            out += flatten(a)
+    return out
+
+
 def parse_keywords(x):
     """Parses a logic statement and outputs its DNF form (ORs of ANDs).
     
@@ -25,32 +53,12 @@ def parse_keywords(x):
         ['poverty', 'lower', 'mid', 'income'],
         ['poverty', 'lower', 'm', 'M', 'income']]
     """
-    import pyparsing
-    from itertools import product, chain
     content = pyparsing.Word(pyparsing.alphanums)
-    parser = pyparsing.nestedExpr( '(', ')', content=content)
+    parser = pyparsing.nestedExpr('(', ')', content=content)
     x = '('+x+')'
     token_list = parser.parseString(x).asList()
     while len(token_list) == 1:
         token_list = token_list[0]
-
-    def unroll(y):
-        if isinstance(y, str): return [y.strip('"')]
-        else:
-            if 'AND' in y and 'OR' in y:
-                raise RuntimeError('check bracketing--cannot have both AND and OR in same clause: %s' %str(y))
-            if 'OR' in y:
-                y = list(filter(lambda a: a != 'OR', y))
-                return list(chain.from_iterable([unroll(a) for a in y]))
-            else:
-                y = list(filter(lambda a: a!='AND', y))
-                return list(product(*[unroll(a) for a in y]))
-
-    def flatten(y):
-        if isinstance(y, str): return [y]
-        else:
-            out = list()
-            for a in y: out += flatten(a)
-        return out
     token_list = [flatten(x) for x in unroll(token_list)]
+
     return token_list
