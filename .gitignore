@@ -1,6 +1,6 @@
-rat_news_creds*
+newsapi_key*
+twitter_API_keys*
 **/.ipynb_checkpoints
 **/__pycache__
-news.db
-error_log.txt
+news.db*
 **.idea

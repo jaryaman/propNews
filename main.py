@@ -10,7 +10,10 @@ def usage():
     Requirements
     -----------------
     
-    newsapi_key.txt : A text file, in the directory above propNews, contains API keys.
+    newsapi_key.txt : A text file, in the directory above propNews, contains API key.
+    twitter_API_keys.txt : A text file, in the directory above propNews, contains Twitter API credentials.
+    url_content_lookup.csv : A text file, URL lookup table for news sources
+    global_prios.csv : A text file, in the directory `global_prios`, a table of topics, scores, and search strings 
     
     Deployment
     -----------------
@@ -27,16 +30,13 @@ def usage():
     Options
     ------------------
     
-    -d		Run in debug mode. 
-    
-            Only lightly call NewsAPI. You may want to run
+    -d		
+        Run in debug mode. Only lightly call NewsAPI. You may want to run 
             $ mv news.db news.db.temp
-            before running the script in debug mode. The 
-            script will most likely end in "No news".
+        before running the script in debug mode. The script will most likely end in "No news".
             
-    -h      Help.
-    
-            Prints this message and exits.
+    -h  
+        Prints this message and exits.
     """)
 
 
