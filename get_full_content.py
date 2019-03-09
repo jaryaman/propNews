@@ -19,6 +19,7 @@ def get_url_content(url_lookup, url):
     story_processed = None  # Ensures None is returned if URL is incompatible format
     with open(url_lookup, 'r') as infile:
         for line_num, line in enumerate(infile):
+            line = line[:-1]  # remove \n
             if line_num == 0:
                 continue
             source, keyword, delimiter = line.split(',')
