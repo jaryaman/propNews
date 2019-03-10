@@ -124,7 +124,7 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, tweet_time_
             print('Building database. This may take some time...')
             get_articles.get_many_results(api_key, db_filename, qaly_path, url_path)
 
-    # Check if the news database is out of date
+    # Check if the news database is out of date, TODO: handle the case when database exists but is empty
     last_article_publish_time = get_articles.find_newest_db_article(db_filename, lag_minutes=0)
     last_article_publish_time_dtm = datetime.datetime.strptime(last_article_publish_time, dt_format)
     query_db_from = datetime.datetime.now() - datetime.timedelta(hours=tweet_time_window)
