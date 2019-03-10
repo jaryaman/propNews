@@ -89,16 +89,6 @@ url_path = 'url_content_lookup.csv'
 # Create API database
 db_filename = 'news.db'
 
-create_str = '''CREATE TABLE IF NOT EXISTS news (
-                url TEXT PRIMARY KEY,
-                score REAL NOT NULL,
-                topics TEXT,
-                published_at DATETIME,
-                source TEXT
-                )
-            '''
-is_first_time_setup = tweeting.create_db(db_filename, create_str)
-
 periodicity_s = 3600
 max_time = 7*24*3600
 
@@ -106,7 +96,7 @@ tweet_time_window = 3*24.0  # hours
 news_refresh_period = 24.0/3  # hours
 
 tweet_thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, apiKey, qaly_path, url_path,
-                                    db_filename, is_first_time_setup, tweet_time_window, news_refresh_period,
+                                    db_filename, tweet_time_window, news_refresh_period,
                                     dbg_mode=dbg_mode)
 
 print('Starting')

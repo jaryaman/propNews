@@ -84,7 +84,7 @@ def fetch_news_since(db_filename, query_db_from):
     return recent_news
 
 
-def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_time_setup, tweet_time_window,
+def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, tweet_time_window,
                news_refresh_period, qaly_thresh=1.0, sample_log_qalys=True, dbg_mode=False, lag_minutes=20):
     """Tweet a single news story drawn randomly, weighted by a QALY, over a time window extending into the past
 
@@ -95,7 +95,6 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_ti
     qaly_path : A string, directory of the QALY table
     url_path : A string, the directory of the URL lookup table for news sources
     db_filename : A string, the name of the news database
-    is_first_time_setup : A bool, True if this is the first time the news database has been created
     tweet_time_window : A float, the number of hours prior to now to draw from the news database to tweet from
     news_refresh_period : A float, the period in hours between refreshing the news database
     lag_minutes : A string, the number of minutes of lag to call NewsAPI since the most recent article in the database
@@ -104,6 +103,17 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, is_first_ti
     sample_log_qalys : A bool, sample the qalys in log-space
     dbg_mode : A bool, if True enter debug mode
     """
+
+    create_str = '''CREATE TABLE IF NOT EXISTS news (
+                    url TEXT PRIMARY KEY,
+                    score REAL NOT NULL,
+                    topics TEXT,
+                    published_at DATETIME,
+                    source TEXT
+                    )
+                '''
+
+    is_first_time_setup = create_db(db_filename, create_str)
 
     if is_first_time_setup:
         if dbg_mode:
