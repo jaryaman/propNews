@@ -162,4 +162,4 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, tweet_time_
     topics = recent_news[article_choice_index][2]
     _ = tweepyapi.update_status(topics + ' {}'.format(str(datetime.datetime.now())) + '\n' + url)
 
-    print('Done!')
+    print('Tweet!')
