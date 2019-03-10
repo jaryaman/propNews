@@ -6,36 +6,36 @@ import sys
 
 def usage():
     print("""propNews -- tweet news stories periodically
-    
+
     Requirements
     -----------------
-    
+
     newsapi_key.txt : A text file, in the directory above propNews, contains API key.
     twitter_API_keys.txt : A text file, in the directory above propNews, contains Twitter API credentials.
     url_content_lookup.csv : A text file, URL lookup table for news sources
-    global_prios.csv : A text file, in the directory `global_prios`, a table of topics, scores, and search strings 
-    
+    global_prios.csv : A text file, in the directory `global_prios`, a table of topics, scores, and search strings
+
     Deployment
     -----------------
-    
+
     To run on an AWS instance:
         $ tmux
         $ python main.py [-options]
     and hit "ctrl+b d" to detach. Then
-        $ logout 
-    
+        $ logout
+
     To run locally:
-        $ python main.py [-options]    
-        
+        $ python main.py [-options]
+
     Options
     ------------------
-    
-    -d		
-        Run in debug mode. Only lightly call NewsAPI. You may want to run 
+
+    -d
+        Run in debug mode. Only lightly call NewsAPI. You may want to run
             $ mv news.db news.db.temp
         before running the script in debug mode. The script will most likely end in "No news".
-            
-    -h  
+
+    -h
         Prints this message and exits.
     """)
 
@@ -92,7 +92,7 @@ db_filename = 'news.db'
 periodicity_s = 3600
 max_time = 7*24*3600
 
-tweet_time_window = 3*24.0  # hours
+tweet_time_window = 2*7*24.0  # hours
 news_refresh_period = 24.0/3  # hours
 
 tweet_thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, api_key, qaly_path, url_path,
