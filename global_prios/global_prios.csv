@@ -1,15 +1,4 @@
 Topic, Yearly QALY/DALY, Keywords,Reference
-Extreme poverty, 1e9, poverty AND (global OR international OR africa OR india OR (lower AND middle AND income)) ,https://80000hours.org/articles/problem-framework/
-Cure Cancer,1e8,(cancer OR tumor OR tumour) AND cure ,https://80000hours.org/articles/problem-framework/
-Mental health, 1.7e8, (schizophrenia OR depression OR anxiety), global burden of disease study
-Smoking, 1e8, (smoking OR cigarette) AND (health OR death OR cancer OR stroke OR "heart attack"), https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(17)30819-X/fulltext
-Climate Change, 5.5e6, "climate change", https://www.who.int/globalchange/environment/en/chapter7.pdf
-Air pollution, 7e6, "air pollution", https://www.who.int/air-pollution/news-and-events/how-air-pollution-is-destroying-our-health
-heart disease,1.8e8, "heart disease" OR "cholesterol" OR "blood pressure" OR "cardiovascular disease", PMID_30415748
-TB,160000000.0,tuberculosis,PMID_30415748
-pneumonia,110000000,pneumonia,PMID_30415748
-diarrhoea,81000000,diarrhoea,PMID_30415748
-neonatal_preterm,70000000,neonatal AND death,PMID_30415748
-HIV,54000000,HIV,PMID_30415748
-asthma,23000000,asthma,PMID_30415748
-blindness,13500000,blindness,PMID_30415748
+Extreme poverty, 1e9, "extreme poverty" AND (global OR world OR "low and middle-income" OR "developing countries" OR China OR India OR U.S. OR "United States" OR Indonesia OR Brazil OR Pakistan OR Nigeria OR Bangladesh OR Russia OR Mexico OR Japan OR Philippines OR Ethiopia OR Egypt OR Vietnam OR Congo OR Germany OR Iran OR Turkey OR France) ,https://80000hours.org/articles/problem-framework/
+Cure Cancer,1e8,(cancer OR tumor OR tumour) AND cure AND (global OR world OR "low and middle-income" OR "developing countries" OR China OR India OR U.S. OR "United States" OR Indonesia OR Brazil OR Pakistan OR Nigeria OR Bangladesh OR Russia OR Mexico OR Japan OR Philippines OR Ethiopia OR Egypt OR Vietnam OR Congo OR Germany OR Iran OR Turkey OR France),https://80000hours.org/articles/problem-framework/
+Climate Change, 5.5e6, "climate change" AND (global OR world OR "low and middle-income" OR "developing countries" OR China OR India OR U.S. OR "United States" OR Indonesia OR Brazil OR Pakistan OR Nigeria OR Bangladesh OR Russia OR Mexico OR Japan OR Philippines OR Ethiopia OR Egypt OR Vietnam OR Congo OR Germany OR Iran OR Turkey OR France), https://www.who.int/globalchange/environment/en/chapter7.pdf
