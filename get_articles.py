@@ -44,35 +44,6 @@ def find_newest_db_article(db_filename, lag_minutes=0):
         raise Exception('News database not found!')
 
 
-def add_quotes(s):
-    """Add quotes to a string
-    """
-    return '"'+s+'"'
-
-
-def get_topic_string(topics):
-    """Convert a list of topics into a string
-
-    Parameters
-    --------------
-    topics : A list of strings, the topics associated with the URL
-
-    Returns
-    --------------
-    topic_string : A human-readable string formatted as a list of string
-    """
-    if len(topics)==0:
-        return 'NULL'
-    else:
-        topics_string = ''
-        for i, topic in enumerate(topics):
-            if i == len(topics) - 1:
-                topics_string += topic
-            else:
-                topics_string += topic+'; '
-        return topics_string
-    
-
 def update_news_db(db_filename, article_dict):
     """Append article_dict into news database
 
@@ -100,10 +71,10 @@ def update_news_db(db_filename, article_dict):
                         {3},
                         {4}
                         )
-                        '''.format(add_quotes(url), url_dict['score'],
-                                   add_quotes(get_topic_string(url_dict['topics'])),
-                                   add_quotes(url_dict['publishedAt']),
-                                   add_quotes(url_dict['source']))
+                        '''.format(score_articles.add_quotes(url), url_dict['score'],
+                                   score_articles.add_quotes(score_articles.get_topic_string(url_dict['topics'])),
+                                   score_articles.add_quotes(url_dict['publishedAt']),
+                                   score_articles.add_quotes(url_dict['source']))
         c.execute(insert_string)
     conn.commit()
     conn.close()

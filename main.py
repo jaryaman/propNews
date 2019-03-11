@@ -1,66 +1,43 @@
 import tweepy
 import tweeting
-import getopt
-import sys
+import argparse
+
+parser = argparse.ArgumentParser(description="Tweet news stories periodically according to global priorities.")
+parser.add_argument('-dbg_mode', default=False, type=bool, nargs=1, help="Run in debug mode (default = False)")
+parser.add_argument('-tw_cred', default='twitter_API_keys.txt', type=str, nargs=1,
+                    help="Contains Twitter API credentials. Must be in directory above repo.")
+parser.add_argument('-news_cred', default='newsapi_key.txt', type=str, nargs=1,
+                    help="Contains NewsAPI key. Must be in directory above repo.")
+parser.add_argument('-url_path', default='url_content_lookup.csv', type=str, nargs=1,
+                    help="Directory of the url lookup table")
+parser.add_argument('-qaly_path', type=str, nargs=1, default='global_prios/global_prios.csv',
+                    help="Path to the QALY table (default =global_prios/global_prios.csv)")
+parser.add_argument('-db_filename', default='news.db', type=str, nargs=1,
+                    help="Name of news database. Default = news.db")
+
+parser.add_argument('-periodicity_s', default=3600, type=float, nargs=1,
+                    help="Tweet periodicity (s). Default=3600.")
+parser.add_argument('-max_time', default=7*24*3600, type=float, nargs=1,
+                    help="Duration to tweet (s). Default=604800 (1 week).")
+parser.add_argument('-tweet_time_window', default=2*7*24.0, type=float, nargs=1,
+                    help="Time window to search into the past for news (hours). Default=336 (2 weeks).")
+parser.add_argument('-news_refresh_period', default=24.0/3, type=float, nargs=1,
+                    help="Periodicity to update news database (hours). Default = 8.")
 
 
-def usage():
-    print("""propNews -- tweet news stories periodically
-
-    Requirements
-    -----------------
-
-    newsapi_key.txt : A text file, in the directory above propNews, contains API key.
-    twitter_API_keys.txt : A text file, in the directory above propNews, contains Twitter API credentials.
-    url_content_lookup.csv : A text file, URL lookup table for news sources
-    global_prios.csv : A text file, in the directory `global_prios`, a table of topics, scores, and search strings
-
-    Deployment
-    -----------------
-
-    To run on an AWS instance:
-        $ tmux
-        $ python main.py [-options]
-    and hit "ctrl+b d" to detach. Then
-        $ logout
-
-    To run locally:
-        $ python main.py [-options]
-
-    optional arguments:
-
-    -d
-        Run in debug mode. Only lightly call NewsAPI. You may want to run
-            $ mv news.db news.db.temp
-        before running the script in debug mode. The script will most likely end in "No news".
-
-    -h
-        Prints this message and exits.
-    """)
-
-
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "dh")
-except Exception as err:
-    print(str(err))
-    usage()
-    sys.exit()
-
-dbg_mode = False
-for opt, arg in opts:
-    if opt == '-d':
-        dbg_mode = True
-    elif opt == '-h':
-        usage()
-        sys.exit()
-    else:
-        usage()
-        sys.exit()
-
+args = parser.parse_args()
+dbg_mode = args.dbg_mode
+twitter_credentials_filename = args.tw_cred
+news_api_filename = args.news_cred
+url_path = args.url_path
+qaly_path = args.qaly_path
+db_filename = args.db_filename
+periodicity_s = args.periodicity_s
+max_time = args.max_time
+tweet_time_window = args.tweet_time_window
+news_refresh_period = args.news_refresh_period
 
 credentials_dir = '../'
-twitter_credentials_filename = 'twitter_API_keys.txt'  # this must be placed in the directory above the repo
-news_api_filename = 'newsapi_key.txt'
 
 # Parse twitter credentials from the text file, see https://developer.twitter.com/en/apps
 fp = open(credentials_dir+twitter_credentials_filename, 'r')
@@ -80,19 +57,6 @@ api_key = fp.read().split()[0]
 auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 tweepyapi = tweepy.API(auth)
-
-qaly_path = 'global_prios/global_prios.csv'
-url_path = 'url_content_lookup.csv'
-
-
-# Create API database
-db_filename = 'news.db'
-
-periodicity_s = 3600
-max_time = 7*24*3600
-
-tweet_time_window = 2*7*24.0  # hours
-news_refresh_period = 24.0/3  # hours
 
 tweet_thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, api_key, qaly_path, url_path,
                                     db_filename, tweet_time_window, news_refresh_period,

@@ -57,6 +57,17 @@ instance.
 
 See `setup_EC2_instructions.md` for details.
 
+## Rescoring news database
+If you change the global priorities file, you may want to re-score the articles without discarding the news database. This can be done with
+```bash
+$ python score_articles.py
+```
+see
+```bash
+$ python score_articles.py -h
+```
+for help
+
 ### It's not working!!
 
 Try
