@@ -30,7 +30,7 @@ $ python main.py -h
 ```
 for help.
 
-## How run on an AWS instance
+## How to run on an AWS instance
 
 For setting up ssh for the existing AWS instance, see details in
 `/Dropbox/hackathon_qaly/Tweeting_technical_stuff/credentials_and_ec2_access.md`
@@ -57,13 +57,13 @@ instance.
 
 See `setup_EC2_instructions.md` for details.
 
-## Rescoring news database
+## Re-scoring the news database
 If you change the global priorities file, you may want to re-score the articles without discarding the news database. This can be done with
-```bash
+```
 $ python score_articles.py
 ```
 see
-```bash
+```
 $ python score_articles.py -h
 ```
 for help
