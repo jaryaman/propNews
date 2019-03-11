@@ -1,4 +1,8 @@
 from keyword_parser import parse_keywords
+import sqlite3 as sq
+import sys
+import argparse
+import datetime
 
 
 def get_qaly_data(filename):
@@ -72,3 +76,29 @@ def score_all(article_dict, qaly_scorer):
         article_dict[article_url]['score'] = article_score
         article_dict[article_url]['topics'] = article_topics
     return article_dict
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Score articles in database.")
+    parser.add_argument('filename', type=str, nargs=1, help="The news database to score")
+    parser.add_argument('-since', type=str, nargs=1,
+                        help="The earliest datetime to score in form YYYY-MM-DDTHH:MM:SS (default: 2 weeks from now)")
+
+    args = parser.parse_args()
+    db_filename = args.filename[0]
+    if args.since is not None:
+        since = args.since[0]
+    else:
+        since = datetime.datetime.now()
+
+
+
+    # db_filename = str(sys.argv[0])
+    # conn = sq.connect(db_filename)
+    # c = conn.cursor()
+    # date_query = '''SELECT * FROM news
+    #                     WHERE published_at > datetime('{}')
+    #     '''.format(datetime.datetime.strftime(query_db_from, dt_format))
+    # c.execute(date_query)
+    # recent_news = c.fetchall()
+    # conn.close()

@@ -27,8 +27,7 @@ def usage():
     To run locally:
         $ python main.py [-options]
 
-    Options
-    ------------------
+    optional arguments:
 
     -d
         Run in debug mode. Only lightly call NewsAPI. You may want to run
