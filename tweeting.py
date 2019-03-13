@@ -5,6 +5,7 @@ import numpy as np
 import sqlite3 as sq
 import os
 import datetime
+import os
 
 dt_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -123,6 +124,7 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, tweet_time_
         else:
             print('Building database. This may take some time...')
             get_articles.get_many_results(api_key, db_filename, qaly_path, url_path)
+            os.system("cp {0} {0}.bckup".format(db_filename))
 
     # Check if the news database is out of date, TODO: handle the case when database exists but is empty
     last_article_publish_time = get_articles.find_newest_db_article(db_filename, lag_minutes=0)
@@ -138,6 +140,7 @@ def tweet_news(tweepyapi, api_key, qaly_path, url_path, db_filename, tweet_time_
             print('News db outdated. Updating...')
             query_from = get_articles.find_newest_db_article(db_filename, lag_minutes=lag_minutes)
             get_articles.get_many_results(api_key, db_filename, qaly_path, url_path, query_from=query_from)
+            os.system("cp {0} {0}.bckup".format(db_filename))
     else:
         print('DBG: Skipping time window check')
 
