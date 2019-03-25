@@ -112,7 +112,7 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
                     source, keyword, delimiter = line.split(',')
                     source_str += source + ','
             source_str += '&'
-            
+
             if query_from is not None:
                 query_from_str = 'from={}&'.format(query_from)
                 query = ('https://newsapi.org/v2/everything?'
@@ -146,6 +146,8 @@ def get_many_results(api_key, db_filename, qaly_path, url_path, query_from=None,
                 published_at = article['publishedAt'][:-1]
                 source_id = article['source']['id']
                 if content is not None:
+                    if desc is None:
+                        desc = ''
                     article_dict[url] = {'content': desc + ' ' + content,
                                          'publishedAt': published_at,
                                          'source': source_id}
