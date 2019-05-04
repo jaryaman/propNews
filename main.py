@@ -1,6 +1,7 @@
 import tweepy
 import tweeting
 import argparse
+from time import sleep
 
 parser = argparse.ArgumentParser(description="Tweet news stories periodically according to global priorities.")
 parser.add_argument('-dbg_mode', default=False, type=bool, nargs=1, help="Run in debug mode (default = False)")
