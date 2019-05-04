@@ -58,12 +58,8 @@ auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 tweepyapi = tweepy.API(auth)
 
-tweet_thread = tweeting.RepeatEvery(periodicity_s, tweeting.tweet_news, tweepyapi, api_key, qaly_path, url_path,
-                                    db_filename, tweet_time_window, news_refresh_period,
-                                    dbg_mode=dbg_mode)
-
-print('Starting')
-tweet_thread.start()
-tweet_thread.join(max_time)
-tweet_thread.stop()
-print('Stopped')
+while True:
+    tweeting.tweet_news(tweepyapi, api_key, qaly_path, url_path,
+                        db_filename, tweet_time_window, news_refresh_period,
+                        dbg_mode=dbg_mode)
+    sleep(periodicity_s)

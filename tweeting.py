@@ -33,33 +33,6 @@ def create_db(db_filename, create_str):
         return False
 
 
-# Class for repetitive actions
-class RepeatEvery(threading.Thread):
-    """Class to repeat a function, with arguments, with a given periodicity
-
-    Parameters
-    -----------------
-    interval : A float, the amount of time in seconds between calling the function
-    func : A function to be called repetitively
-    *args : Positional arguments for func
-    *kwargs : Named arguments for func
-    """
-    def __init__(self, interval, func, *args, **kwargs):
-        threading.Thread.__init__(self)
-        self.interval = interval  # seconds between calls
-        self.func = func          # function to call
-        self.args = args          # optional positional argument(s) for call
-        self.kwargs = kwargs      # optional keyword argument(s) for call
-        self.runable = True
-
-    def run(self):
-        while self.runable:
-            self.func(*self.args, **self.kwargs)
-            time.sleep(self.interval)
-
-    def stop(self):
-        self.runable = False
-
 
 def fetch_news_since(db_filename, query_db_from):
     """Fetch news since a particular time from database
